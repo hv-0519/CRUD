@@ -11,7 +11,11 @@ if (!isset($_SESSION["id"])){
 	exit;
 }
 
-$id = $_GET["id"];
+$id = $_GET["id"] ?? 0;
+if (!$id){
+	header("Location:list.php");
+	exit;
+}
 
 $get_product = mysqli_query($conn,"SELECT * FROM products WHERE id = '$id'");
 $product = mysqli_fetch_assoc($get_product);
@@ -25,18 +29,29 @@ if (isset($_POST["update"])){
 	$sale_price = $_POST["sale_price"];
 
 	if ($sale_price >= $price){
-        $msg = "sale_price must be less than price";
+        $msg = "sale price must be less than price";
 	}
 	else{
-	mysqli_query($conn,
-	"UPDATE products SET 
-	name = '$name',
-	description = '$description',
-	price = '$price',
-	sale_price = '$sale_price'
-	where id = '$id'
-	"
+	// mysqli_query($conn,
+	// "UPDATE products SET 
+	// name = '$name',
+	// description = '$description',
+	// price = '$price',
+	// sale_price = '$sale_price'
+	// where id = '$id'
+	// "
+	// );
+	$stmts = $conn->prepare(
+		"UPDATE products SET 
+		name = ?,
+		description = ?,
+		price = ?,
+		sale_price = ?
+		where id = ?
+		"
 	);
+	$stmts->bind_param("ssiii", $name, $description, $price, $sale_price, $id);
+	$stmts->execute();
 	header("Location:list.php?msg=success");
 }
 }
@@ -54,5 +69,8 @@ Product Sale Price<input type = "number" name = "sale_price" value="<?php echo $
 
 <button type = "submit" name = "update">Update</button>
 <a href = 'list.php'>Back To Products</a>
+<tr>
+<td><a href="../dashboard.php">Dashboard</a></td>
+</tr>
 
 

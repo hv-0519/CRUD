@@ -16,9 +16,15 @@ if(!isset($_SESSION["id"])){
 if(isset($_GET["delete"])){
 	$id = $_GET["delete"];
 
-	mysqli_query($conn,"DELETE FROM products WHERE id = $id");
+	// mysqli_query($conn,"DELETE FROM products WHERE id = $id");
+    $stmts = $conn->prepare("DELETE FROM products WHERE id = ?");
+    $stmts->bind_param("i", $id);
+    $stmts->execute();
 }
-$res = mysqli_query($conn,"SELECT * FROM products");
+// $res = mysqli_query($conn,"SELECT * FROM products");
+$stmts = $conn->prepare("SELECT * FROM products");
+$stmts->execute();
+$res = $stmts->get_result();
 ?>
 <html>
 <body>

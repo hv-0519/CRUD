@@ -26,18 +26,26 @@ if (isset($_POST["save"])) {
 
     if ($sale_price >= $price){
 
-        $msg = "sale_price must be less than price";
+        $msg = "sale price must be less than price";
 
     } else {
 
         
-        $sql = "INSERT INTO products
-        (name,description,price,sale_price)
-        VALUES
-        ('$name','$description','$price','$sale_price')";
+        // $sql = "INSERT INTO products
+        // (name,description,price,sale_price)
+        // VALUES
+        // ('$name','$description','$price','$sale_price')";
 
-        mysqli_query($conn,$sql);
+        // mysqli_query($conn,$sql);
 
+        // header("Location:list.php?msg=success");
+        // exit;
+        $stmts =$conn->prepare(
+            "INSERT INTO products(name,description,price,sale_price)
+             VALUES(?,?,?,?)"
+        );
+        $stmts->bind_param("ssii", $name, $description, $price, $sale_price);
+        $stmts->execute();
         header("Location:list.php?msg=success");
         exit;
     }
@@ -46,6 +54,8 @@ if (isset($_POST["save"])) {
 
 <html>
 <body>
+<p><?php echo $msg; ?></p>
+
 <form method="post" enctype="multipart/form-data">
 
 <table>
@@ -80,6 +90,10 @@ if (isset($_POST["save"])) {
 Add Product
 </button>
 </td>
+</tr>
+
+<tr>
+<td><a href="../dashboard.php">Dashboard</a></td>
 </tr>
 
 </table>

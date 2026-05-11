@@ -18,8 +18,12 @@ if (isset($_POST["login"])) {
     } else {
 
 
-        $sql = "SELECT * FROM users WHERE email = '$email'";
-        $res = mysqli_query($conn, $sql);
+        // $sql = "SELECT * FROM users WHERE email = '$email'";
+        // $res = mysqli_query($conn, $sql);
+        $stmts = $conn->prepare("SELECT * FROM users WHERE email = ?");
+        $stmts->bind_param("s", $email);
+        $stmts->execute();
+        $res = $stmts->get_result();
 
         if ($res && mysqli_num_rows($res) > 0) {
 
